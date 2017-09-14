@@ -1,0 +1,8 @@
+{
+	"port": 8080,
+	"bodyLimit": "100kb",
+	"corsHeaders": ["Link"],
+	"webLoggedInLink": "http://localhost:3000/savetoken",
+	"feedlyBaseUrl": "http://sandbox7.feedly.com/v3",
+	"clientSecret": ""
+}
