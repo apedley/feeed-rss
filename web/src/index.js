@@ -29,13 +29,11 @@ import { USE_TOKEN } from './actions/types';
 
 
 
-const createStoreWithMiddleware = applyMiddleware(reduxThunk)(createStore);
+
 const store = createStore(reducers, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
  compose(
   applyMiddleware(reduxThunk)
 ))
-
-const myStore = createStoreWithMiddleware(reducers)
 
 const token = localStorage.getItem('access_token')
 

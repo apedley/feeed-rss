@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import { Redirect } from 'react-router-dom';
-import { Grid, Image } from 'semantic-ui-react'
+import { Grid } from 'semantic-ui-react'
 import { toast } from 'react-toastify'
 
 import Sidebar from '../components/sidebar'
@@ -14,8 +14,6 @@ import * as mainActions from '../actions/main';
 
 import FeedDisplay from '../components/feedDisplay';
 
-
-import feedlyConfig from '../util/feedly';
 
 class MainView extends Component {
   toggleCategory(category) {

@@ -1,28 +1,30 @@
 import {
   SELECT_STREAM,
-  SELECTED_STREAM_LOADING, SELECTED_ITEM_LOADING, SELECT_ITEM, CLEAR_SELECTED_ITEM, API_ERROR
-} from '../actions/types'
+  SELECTED_STREAM_LOADING,
+  SELECT_ITEM,
+  CLEAR_SELECTED_ITEM,
+  API_ERROR
+} from "../actions/types";
 
-import { toast } from 'react-toastify'
+import { toast } from "react-toastify";
 const initialState = {
   error: null,
   selectedStream: null,
   streamLoading: false,
   selectedItem: null
-}
-export default function (state = initialState, action) {
-  
+};
+export default function(state = initialState, action) {
   switch (action.type) {
     case SELECT_STREAM:
-      return { ...state, selectedStream: action.payload, streamLoading: false }
+      return { ...state, selectedStream: action.payload, streamLoading: false };
     case SELECTED_STREAM_LOADING:
-      return { ...state, selectedItem: null, streamLoading: true }
+      return { ...state, selectedItem: null, streamLoading: true };
     case SELECT_ITEM:
-      return { ...state, selectedItem: action.payload }
-    case API_ERROR:
-      return { ...state, error: action.payload }
+      return { ...state, selectedItem: action.payload };
     case CLEAR_SELECTED_ITEM:
-      return { ...state, selectedItem: null }
+      return { ...state, selectedItem: null };
+    case API_ERROR:
+      return { ...state, error: action.payload };
     default:
       return state;
   }

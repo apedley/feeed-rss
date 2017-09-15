@@ -19,9 +19,9 @@ class SaveToken extends Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => {
-  return {
-    prop: state.prop
-  }
-}
+// const mapStateToProps = (state, ownProps) => {
+//   return {
+//     prop: state.prop
+//   }
+// }
 export default connect(null, actions)(SaveToken);

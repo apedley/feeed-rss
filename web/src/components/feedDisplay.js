@@ -1,10 +1,9 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux';
-import striptags from 'striptags';
+
 import _ from 'lodash';
-import { Icon, Label, Menu, Table, Loader, Item, Header } from 'semantic-ui-react'
-import SanitizeHTML from 'sanitize-html';
-import RawHtml from 'react-raw-html';
+import { Icon, Label, Loader, Item, Header } from 'semantic-ui-react'
+
 import { Parser } from 'html-to-react';
 import ContentDisplay from './contentDisplay';
 

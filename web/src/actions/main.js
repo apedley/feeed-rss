@@ -1,9 +1,9 @@
 import {
   SELECT_STREAM,
   SELECTED_STREAM_LOADING,
-  SELECTED_ITEM_LOADING,
   SELECT_ITEM,
-  CLEAR_SELECTED_ITEM
+  CLEAR_SELECTED_ITEM,
+  API_ERROR
 } from "./types";
 
 import {  makeRequest } from "./api";
@@ -31,7 +31,15 @@ export function selectStream(entity) {
         type: SELECT_STREAM,
         payload: stream
       });
-    });
+    })
+    .catch(err => {
+      console.error(err);
+      dispatch({
+        type: API_ERROR,
+        payload: err,
+        error: true
+      });
+    })
   };
 }
 
@@ -62,13 +70,5 @@ export function toggleItem(item, external = false) {
       type: SELECT_ITEM,
       payload: item
     });
-
-    // makeRequest(feedlyConfig.resources.ENTRY_CONTENTS_WITH_ID, item.id)
-    //   .then(response => {
-    //     const entry = response.data[0];
-
-    //     // debugger;
-
-    // })
   };
 }

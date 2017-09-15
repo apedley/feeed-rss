@@ -1,10 +1,7 @@
 import React from "react";
 
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import * as actions from "../actions/feeds";
 import _ from "lodash";
-import { Label, Menu, Accordion, Icon, List } from "semantic-ui-react";
+import { Label, Menu, Icon } from "semantic-ui-react";
 
 const getUnreadCount = (streamId, counts) => {
   if (!counts) {
