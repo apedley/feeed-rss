@@ -1,6 +1,42 @@
 body {
+  
 }
 
 .listGroupHeader {
   font-weight: bold;
+}
+
+.dark-toast{
+  background: #323232;
+  color: #fff;
+}
+
+.dark-toast > .toastify__close{
+  color: #fff;
+}
+
+.transparent-progress{
+  background:  rgba(255,255,255,.7);
+}
+
+.fancy-progress{
+  background: repeating-radial-gradient(red, yellow 10%, green 15%);
+}
+
+.category-menu-title {
+  text-transform: uppercase;
+  color: rgb(139, 139, 139);
+  font-weight: bold;
+  font-size: .9em;
+}
+.ui.grid.main-view-grid {
+  margin: .5em;
+}
+.menu-header-label {
+  float: right;
+}
+
+.list-story-title{
+  line-height: 1.5em;
+  font-size: 1.5em !important;
 }

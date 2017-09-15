@@ -3,9 +3,15 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware, compose } from 'redux';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { Container } from 'semantic-ui-react'
+// import * as sagas from './sagas' 
+// import sagaMiddleware from 'redux-saga'
 import reduxThunk from 'redux-thunk';
 import './index.css';
-import 'bootstrap/dist/css/bootstrap.css';
+import 'semantic-ui-css/semantic.min.css';
+import 'react-toastify/dist/ReactToastify.min.css' 
+
+import { ToastContainer, toast } from 'react-toastify';
 
 import reducers from './reducers';
 
@@ -20,7 +26,7 @@ import Signin from './components/signin';
 
 import { USE_TOKEN } from './actions/types';
 
-import { Container } from 'reactstrap';
+
 
 
 const createStoreWithMiddleware = applyMiddleware(reduxThunk)(createStore);
@@ -40,14 +46,23 @@ if (token) {
 ReactDOM.render(
   <Provider store={store}>
     <BrowserRouter>
-      <Container fluid={true}>
+      <Container fluid>
+          <ToastContainer 
+          position="top-right"
+          type="default"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          pauseOnHover
+        />
         <Switch>
           <Route path="/about" component={AboutView} />
           <Route path="/signin" component={Signin}  />
           <Route path="/savetoken" component={SaveToken} />
           <Route path="/signout" component={DeleteToken} />
           <Route path="/categories" component={CategoryView} />
-          <Route path="/feeed" component={MainView} />
+          <Route path="/feeed/:streamId?" component={MainView} />
           <Route path="/" component={HomeView} />
         </Switch>
       </Container>

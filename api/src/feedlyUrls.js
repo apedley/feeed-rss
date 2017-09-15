@@ -9,5 +9,8 @@ export default {
     return `/streams/${id}/contents`;
   },
   subscriptions: () => { return '/subscriptions'},
-  unreadCount: () => { return '/markers/counts'}
+  unreadCount: () => { return '/markers/counts'},
+  entryContents: (id) => {
+    return `/entries/${id}`
+  }
 }

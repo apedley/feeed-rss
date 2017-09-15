@@ -17,6 +17,8 @@ export default function (state = initialState, action) {
       return { ...state, authenticated: false };
     case USE_TOKEN:
       return { ...state, authenticated: true }
+    default:
+      return state;
   }
   return state;
 }
