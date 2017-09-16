@@ -1,14 +1,26 @@
 
-import { makeRequest } from "./api";
+import { makeRequest, handleApiError, categoriesRequest } from '../util/api';
 import feedlyConfig from "../util/feedly";
 import _ from "lodash";
 import {
-  API_ERROR,
   LIST_CATEGORIES_FINISHED,
   LIST_CATEGORIES_LOADING,
-  TOGGLE_CATEGORY_VISIBILITY
+  TOGGLE_CATEGORY_VISIBILITY,
+  LOAD_CATEGORIES_SUCCESS
 } from "./types";
+const loadCategoriesSuccess = (categories) => ({
+  type: LOAD_CATEGORIES_SUCCESS,
+  categories
+})
 
+export function getCategories() {
+  return (dispatch, getState) => {
+    categoriesRequest()
+      .then(categories => {
+        dispatch(loadCategoriesSuccess(categories))
+      })
+  }
+}
 export function listCategories() {
   return (dispatch, getState) => {
     dispatch({
@@ -24,15 +36,15 @@ export function listCategories() {
         dispatch({ type: LIST_CATEGORIES_FINISHED, payload: categories });
       })
       .catch(err => {
-        dispatch({
-          type: API_ERROR,
-          payload: err,
-          error: true
-        });
+        handleApiError(err, dispatch)
+        
       });
   };
 }
+
+
 export function toggleVisibility(category) {
+  
   return {
     type: TOGGLE_CATEGORY_VISIBILITY,
     payload: category.id

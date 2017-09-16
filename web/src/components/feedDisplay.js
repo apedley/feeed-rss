@@ -29,22 +29,33 @@ class FeedDisplay extends Component {
         cursor: 'pointer'
       }
       // debugger;
-      
+      const externalLinkStyles = {
+        margin: '5px 10px'
+      }
+
       const info = (
+        
         <Item key={item.id}>
           <Item.Content style={itemStyles} onClick={() => { this.props.toggleItem(item) } }>
-            
+          
           <Label className="right floated" >
             {published.toDateString()}
           </Label>
             <Item.Header style={titleStyles} > 
               {item.title}
+              
+              {!item.content && ( <Icon name="external square" style={externalLinkStyles} /> )}
             </Item.Header>
-            <Icon name="external square" link onClick={(e) => { e.stopPropagation(); window.open(item.alternate[0].href) } }/>
+            
             <Item.Meta onClick={() => { this.props.toggleItem(item) } }>
-              {item.author} 
+              {item.author}
+              {item.content && (
+                <a style={externalLinkStyles} onClick={(e) => { e.stopPropagation(); window.open(item.alternate[0].href) } }>
+                  Visit Site
+                </a>)}
             </Item.Meta>
             <Item.Description >
+            
               { item.displayed === false && item.summary ? this.renderContent(item.summary.content, true, 250) : '' }
             </Item.Description>
           </Item.Content>
@@ -95,7 +106,7 @@ class FeedDisplay extends Component {
     return (
       <div>
         <Header textAlign='center' as="h2" style={headerStyles}>
-          { feed.title }
+          { feed.title.trim().length < 50 ? feed.title.trim() : feed.title.trim().substr(0, 45).trim() + '...' }
         </Header>
           <Item.Group divided>
             { this.renderItems(feed.items) }

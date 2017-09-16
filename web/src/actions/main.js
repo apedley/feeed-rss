@@ -1,12 +1,13 @@
 import {
-  SELECT_STREAM,
+  SELECTED_STREAM_FINISHED,
   SELECTED_STREAM_LOADING,
   SELECT_ITEM,
   CLEAR_SELECTED_ITEM,
-  API_ERROR
+  ADD_ALERT,
+  REMOVE_ALERT
 } from "./types";
 
-import {  makeRequest } from "./api";
+import { makeRequest, handleApiError } from '../util/api';
 import feedlyConfig from "../util/feedly";
 import _ from "lodash";
 
@@ -17,7 +18,7 @@ export function selectStream(entity) {
     });
     makeRequest(
       feedlyConfig.resources.STREAM_CONTENTS_WITH_ID,
-      entity.id
+      {fetchId: entity.id }
     ).then(response => {
       const stream = response.data;
       if (!stream.title) {
@@ -28,17 +29,13 @@ export function selectStream(entity) {
         item.displayed = false;
       });
       dispatch({
-        type: SELECT_STREAM,
+        type: SELECTED_STREAM_FINISHED,
         payload: stream
       });
     })
     .catch(err => {
-      console.error(err);
-      dispatch({
-        type: API_ERROR,
-        payload: err,
-        error: true
-      });
+      handleApiError(err, dispatch)
+      
     })
   };
 }
@@ -50,9 +47,14 @@ const externalRedirect = item => {
 
 export function toggleItem(item, external = false) {
   return (dispatch, getState) => {
+    // debugger;
     item.displayed = !item.displayed;
 
     if (external || !item.content) {
+      return externalRedirect(item);
+    }
+
+    if (!item.content.content) {
       return externalRedirect(item);
     }
     const currentState = getState();
@@ -71,4 +73,24 @@ export function toggleItem(item, external = false) {
       payload: item
     });
   };
+}
+
+export function sendAlert(code, message, level) {
+  return (dispatch, getState) => {
+    
+    dispatch({
+      type: ADD_ALERT,
+      payload: {
+        code, message, level
+      }
+    })
+  }
+}
+
+export function removeAlert() {
+  return (dispatch, getState) => {
+    dispatch({
+      type: REMOVE_ALERT
+    })
+  }
 }

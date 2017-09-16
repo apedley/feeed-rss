@@ -1,17 +1,68 @@
-
-
-import { makeRequest } from './api';
-import feedlyConfig from '../util/feedly';
+import { makeRequest, handleApiError, feedsRequest, markersRequest  } from "../util/api";
+import feedlyConfig from "../util/feedly";
 import {
-  LIST_FEEDS_FINISHED, LIST_FEEDS_LOADING, API_ERROR, TOGGLE_FEEDS
-} from './types';
+  LIST_FEEDS_FINISHED,
+  LIST_FEEDS_LOADING,
+  TOGGLE_FEEDS,
+  SUBSCRIBING_TO_FEED,
+  SUBSCRIBING_TO_FEED_FINISHED,
+  SUBSCRIBING_TO_FEED_FAILED,
+  LOAD_FEEDS_SUCCESS
+} from "./types";
 
-// const getUnreadCount = (streamId, counts) => {
-//   var marks = _.filter(counts, stream => {
-//     return stream.id === streamId;
-//   });
-//   return marks.length > 0 ? marks[0].count : 0;
-// }
+
+
+export function sendFeedError(error) {
+  return (dispatch) => {
+    debugger;
+  }
+}
+
+export function getMarkers() {
+  // return (dispatch, getState) => {
+    return markersRequest()
+      // .then(markers => {
+      //   debugger;
+      // })
+  // }
+}
+
+
+const loadFeedsSuccess = (feeds, unreadInfo) => ({
+  type: LOAD_FEEDS_SUCCESS,
+  feeds,
+  unreadInfo
+})
+
+export function betterGetFeeds(unreadCounts) {
+  return (dispatch, getState) => {
+    return feedsRequest()
+      .then(feeds => {
+        console.log(unreadCounts);
+        const unreadInfo = unreadCounts.reduce(function(prev, curr, idx) {
+          prev[curr.id] = curr.count;
+          return prev;
+        }, {});
+
+        feeds.forEach(feed =>{
+          feed.unread = unreadInfo[feed.id] || 0;
+        })
+
+
+        dispatch(loadFeedsSuccess(feeds, unreadInfo))
+      })
+
+  }
+}
+
+export function getFeedsWithMarkers() {
+  return (dispatch) => {
+    return getMarkers().then(
+      unreadCounts => dispatch(betterGetFeeds(unreadCounts)),
+      error => dispatch(sendFeedError(error))
+    )
+  }
+}
 
 export function getFeeds() {
   let feeds = {};
@@ -22,35 +73,59 @@ export function getFeeds() {
     makeRequest(feedlyConfig.resources.SUBSCRIPTIONS)
       .then(response => {
         feeds = response.data;
-        
+
         makeRequest(feedlyConfig.resources.UNREAD_COUNT)
           .then(response => {
             const unreadCounts = response.data.unreadcounts;
             
-            dispatch({ type: LIST_FEEDS_FINISHED, payload: { feeds, unreadCounts } })
+            dispatch({
+              type: LIST_FEEDS_FINISHED,
+              payload: { feeds, unreadCounts }
+            });
           })
+          .catch(err => {
+            handleApiError(err, dispatch);
+          });
       })
       .catch(err => {
-        console.error(err);
-        dispatch({
-          type: API_ERROR,
-          payload: err,
-          error: true
-        });
-      })
-  }
+        handleApiError(err, dispatch);
+      });
+  };
 }
 
+export function subscribe(feed) {
+  
+  return (dispatch, getState) => {
+
+    dispatch({
+      type: SUBSCRIBING_TO_FEED
+    })
+    makeRequest(feedlyConfig.resources.SUBSCRIBE, {
+      id: feed.id
+    }).then(response => {
+      if (response.status === 200) {
+        dispatch({
+          type: SUBSCRIBING_TO_FEED_FINISHED,
+          payload: response.data
+        })
+      } else {
+        dispatch({
+          type: SUBSCRIBING_TO_FEED_FAILED
+        })
+      }
+    });
+  };
+}
 
 export function toggleFeeds(categories, id) {
   categories.forEach(category => {
     if (category.id === id) {
       category.display = !category.display;
     }
-  })
+  });
 
   return {
     type: TOGGLE_FEEDS,
     payload: categories
-  }
+  };
 }

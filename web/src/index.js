@@ -4,15 +4,10 @@ import { Provider } from 'react-redux';
 import { createStore, applyMiddleware, compose } from 'redux';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { Container } from 'semantic-ui-react'
-// import * as sagas from './sagas' 
-// import sagaMiddleware from 'redux-saga'
+
 import reduxThunk from 'redux-thunk';
 import './index.css';
 import 'semantic-ui-css/semantic.min.css';
-import 'react-toastify/dist/ReactToastify.min.css' 
-
-import { ToastContainer, toast } from 'react-toastify';
-
 import reducers from './reducers';
 
 import HomeView from './views/home';
@@ -30,9 +25,10 @@ import { USE_TOKEN } from './actions/types';
 
 
 
-const store = createStore(reducers, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
+const store = createStore(reducers,
  compose(
-  applyMiddleware(reduxThunk)
+  applyMiddleware(reduxThunk),
+  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
 ))
 
 const token = localStorage.getItem('access_token')
@@ -45,15 +41,7 @@ ReactDOM.render(
   <Provider store={store}>
     <BrowserRouter>
       <Container fluid>
-          <ToastContainer 
-          position="top-right"
-          type="default"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          pauseOnHover
-        />
+
         <Switch>
           <Route path="/about" component={AboutView} />
           <Route path="/signin" component={Signin}  />

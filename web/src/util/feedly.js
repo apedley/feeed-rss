@@ -4,6 +4,7 @@ export default {
     STREAM_CONTENTS_WITH_ID: 'streamContents',
     SUBSCRIPTIONS: 'subscriptions',
     UNREAD_COUNT: 'unreadCount',
-    ENTRY_CONTENTS_WITH_ID: 'entryContents'
+    ENTRY_CONTENTS_WITH_ID: 'entryContents',
+    SUBSCRIBE: 'subscribe'
   }
 }

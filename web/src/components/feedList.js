@@ -2,6 +2,7 @@ import React from "react";
 
 import _ from "lodash";
 import { Label, Menu, Icon } from "semantic-ui-react";
+import CategoryContainer from './categoryContainer';
 
 const getUnreadCount = (streamId, counts) => {
   if (!counts) {
@@ -12,7 +13,7 @@ const getUnreadCount = (streamId, counts) => {
     return stream.id === streamId;
   });
   return marks.length > 0 ? marks[0].count : 0;
-};
+}; 
 
 export default function FeedList(props) {
   const renderFeeds = feeds => {
@@ -24,22 +25,18 @@ export default function FeedList(props) {
             props.selectStream(feed);
           }}
         >
-          <Label>{feed.unread}</Label> }
-          {feed.title}
+          <Label>{feed.unread}</Label> 
+          { feed.title.trim().length < 37 ? feed.title.trim() : feed.title.trim().substr(0, 35).trim() + '...' }
         </Menu.Item>
       );
-      // return (
-      //   <li key={feed.id}>
-      //     {feed.title}
-      //   </li>
-      // )
     });
   };
+
   const renderCategories = (feeds, marks, catList) => {
     let categories = [];
 
     _.each(feeds, feed => {
-      feed.unread = getUnreadCount(feed.id, marks);
+      // feed.unread = getUnreadCount(feed.id, marks);
 
       feed.categories.forEach(cat => {
         cat.unread = getUnreadCount(cat.id, marks);
@@ -55,7 +52,7 @@ export default function FeedList(props) {
       var listItem = _.find(catList, c => {
         return c.id === category.id;
       });
-      category.visible = false;
+      category.visible = true;
       if (listItem && listItem.visible) {
         category.visible = listItem.visible;
       }
@@ -71,31 +68,29 @@ export default function FeedList(props) {
     });
 
     return _.map(categories, category => {
-      // return (
-      //   <List.Item key={category.id}>
-      //     <List.Icon name="folder" />
-      //     <List.Content>
-      //     <List.Header>
-      //       {category.label}
-      //     </List.Header>
-      //     </List.Content>
-      //   </List.Item>
-      // )
+      const unreadCount = category.feeds.reduce((prev, curr) => {
+        return prev + curr.unread;
+      }, 0);
+      
+      return (
+        <CategoryContainer label={category.label} unread={unreadCount} feeds={category.feeds} key={category.id} selectStream={props.selectStream} id={category.id}/>
+      )
+    });
+
+    const oldStuff =  _.map(categories, category => {
       const iconName = category.visible ? "caret down" : "caret right";
 
       const categoryHeaderStyles = {
         cursor: "pointer"
       };
+
+      const unreadCount = category.feeds.reduce((prev, curr) => {
+        return prev + curr.unread;
+      }, 0);
+
       return (
         <Menu vertical fluid key={category.id}>
-          {/*          <Menu.Item icon={iconName} className="category-menu-item">
-            <Label color="blue">{category.unread}</Label>
-              
-              <span className="category-menu-title" onClick={ () => { props.selectStream(category) } } >
-                {category.label}
-              </span>
-            
-      </Menu.Item>*/}
+
           <Menu.Item style={categoryHeaderStyles}>
             <Menu.Header
               onClick={e => {
@@ -104,7 +99,7 @@ export default function FeedList(props) {
             >
               <Icon name={iconName} />
               <Label color="blue" className="menu-header-label">
-                {category.unread}
+                { unreadCount }
               </Label>
               {category.label}
             </Menu.Header>
@@ -113,94 +108,12 @@ export default function FeedList(props) {
           {category.visible ? renderFeeds(category.feeds) : ""}
         </Menu>
       );
-      // const title = (
-      //     <Accordion.Title>
-      //       <Icon name='dropdown' />
-      //       {category.label}
-      //     </Accordion.Title>
-      // );
 
-      // const content = (
-      //     <Accordion.Content>
-      //       <ul>
-      //       { renderFeeds(category.feeds) }
-      //       </ul>
-      //     </Accordion.Content>
-      // );
-
-      // return [title, content];
     });
   };
-  // return (
-  //   <Accordion fluid>
-  //     {renderCategories(props.subscriptions, props.marks, props.categories)}
-  //   </Accordion>
-  // )
   return (
     <div>
-      {renderCategories(props.subscriptions, props.marks, props.categories)}
+        {renderCategories(props.subscriptions, props.marks, props.categories)}
     </div>
   );
 }
-// class FeedList extends Component {
-
-//   toggleCategory(category) {
-//     this.props.actions.feedActions.toggleFeeds(this.props.categories, category.id);
-//   }
-
-//   renderCategories() {
-
-//     const renderFeeds = (feeds) => {
-//       return _.map(feeds, feed => {
-//         return (
-//           <ListGroupItem key={feed.id}>
-//             {feed.title} ({feed.unread})
-//           </ListGroupItem>
-//         )
-//       })
-//     }
-
-//     const toggleCategory = (category) => {
-//       category.display = !category.display;
-//     }
-
-//     return _.map(this.props.categories, (category) => {
-//       if (category.display) {}
-//       return (
-//         <div key={category.id}>
-//         <h3 className="listGroupHeader" onClick={ () => this.toggleCategory(category) } >
-//           {category.label} ({category.unread})
-//         </h3>
-//         <ListGroup>
-//           { category.display ? renderFeeds(category.feeds) : '' }
-//         </ListGroup>
-//         </div>
-//       )
-
-//     });
-//   }
-//   render() {
-//     return (
-//       <div>
-//         {this.renderCategories()}
-//       </div>
-//     )
-//   }
-// }
-
-// function mapStateToProps(state) {
-//   return {
-//     feeds: state.feeds,
-//     categories: state.feeds.categories
-//   };
-// };
-
-// const mapDispatchToProps = (dispatch) => {
-//   return {
-//     actions: {
-//       feedActions: bindActionCreators(actions, dispatch)
-//     }
-//   }
-// }
-
-// export default connect(mapStateToProps, mapDispatchToProps)(FeedList);

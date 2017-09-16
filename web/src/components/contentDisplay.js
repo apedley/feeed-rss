@@ -6,7 +6,9 @@ export default function ContentDisplay(props) {
   
 
   // const reactElement = this.htmlToReactParser.parse(content);
-  const sanitized = SanitizeHTML(props.content);
+  const sanitized = SanitizeHTML(props.content, {
+    allowedTags: SanitizeHTML.defaults.allowedTags.concat([ 'img' ])
+  });
   // const reactSanitizedElement = this.htmlToReactParser.parse(sanitized);
   let noTagsContent = SanitizeHTML(props.content, {
     allowedTags: [],
@@ -18,7 +20,7 @@ export default function ContentDisplay(props) {
   }
 
   
-  if (props.maxCharacters > 0) {
+  if (props.maxCharacters > 0 && noTagsContent.trim().length > props.maxCharacters) {
     noTagsContent = noTagsContent.trim().substr(1, props.maxCharacters) + ' ...';
   }
   return <RawHtml.div>{noTagsContent}</RawHtml.div>;
