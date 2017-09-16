@@ -13,7 +13,7 @@ class Signin extends Component {
 
   render() {
     return (
-      <Redirect to="/main" />
+      <div>signin</div>
     )
   }
 }

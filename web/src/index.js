@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware, compose } from 'redux';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 import { Container } from 'semantic-ui-react'
 
 import reduxThunk from 'redux-thunk';
@@ -32,10 +32,23 @@ const store = createStore(reducers,
 ))
 
 const token = localStorage.getItem('access_token')
-
 if (token) {
+  
   store.dispatch({ type: USE_TOKEN })
 }
+const isAuthenticated = () => {
+  return !!token
+}
+const PrivateRoute = ({ component: Component, ...rest }) => (
+  <Route {...rest} render={props => (
+    isAuthenticated() ? (
+      <Component {...props} />
+    ) : (
+      <Redirect to="/about" />
+    )
+  )}/>
+)
+
 
 ReactDOM.render(
   <Provider store={store}>
@@ -44,11 +57,14 @@ ReactDOM.render(
 
         <Switch>
           <Route path="/about" component={AboutView} />
-          <Route path="/signin" component={Signin}  />
+          
+          <Route path="/signin" render={ () => { window.location = 'http://localhost:8080/auth' }} />
           <Route path="/savetoken" component={SaveToken} />
           <Route path="/signout" component={DeleteToken} />
           <Route path="/categories" component={CategoryView} />
           <Route path="/feeed/:streamId?" component={MainView} />
+          
+          {/* <PrivateRoute path="/" component={HomeView} /> */}
           <Route path="/" component={HomeView} />
         </Switch>
       </Container>

@@ -23,6 +23,7 @@ export default class CategoryContainer extends Component {
   }
 
   streamClicked(stream, event) {
+    event.stopPropagation();
     this.props.selectStream(stream);
   }
 

@@ -6,9 +6,9 @@ import OptionsMenu from '../components/options';
 
 class HomeView extends Component {
   render() {
-    if (this.props.authenticated) {
+    if (!this.props.authenticated) {
       return (
-        <Redirect to="/feeed" />
+        <Redirect to="/about" />
       )
     }
     return (
