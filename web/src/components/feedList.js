@@ -2,7 +2,7 @@ import React from "react";
 
 import _ from "lodash";
 import { Label, Menu, Icon } from "semantic-ui-react";
-import CategoryContainer from './categoryContainer';
+import CategoryList from './sidebar/categoryList';
 
 const getUnreadCount = (streamId, counts) => {
   if (!counts) {
@@ -73,7 +73,7 @@ export default function FeedList(props) {
       }, 0);
       
       return (
-        <CategoryContainer label={category.label} unread={unreadCount} feeds={category.feeds} key={category.id} selectStream={props.selectStream} id={category.id}/>
+        <CategoryList label={category.label} unread={unreadCount} feeds={category.feeds} key={category.id} selectStream={props.selectStream} id={category.id}/>
       )
     });
 
@@ -113,7 +113,7 @@ export default function FeedList(props) {
   };
   return (
     <div>
-        {renderCategories(props.subscriptions, props.marks, props.categories)}
+        {/* {renderCategories(props.subscriptions, props.marks, props.categories)} */}
     </div>
   );
 }

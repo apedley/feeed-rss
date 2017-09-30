@@ -6,7 +6,7 @@ import { Redirect } from 'react-router-dom';
 import { Grid } from 'semantic-ui-react'
 
 
-import Sidebar from '../components/sidebar'
+import Sidebar from '../components/sidebar.old'
 import AlertsOverlay from '../components/alertsOverlay'
 import * as categoryActions from '../actions/categories';
 import * as feedActions from '../actions/feeds';
@@ -39,7 +39,7 @@ class MainView extends Component {
 
   componentWillMount() {
     this.props.actions.categoryActions.listCategories();
-    this.props.actions.categoryActions.getCategories();
+    // this.props.actions.categoryActions.getCategories();
     // this.props.actions.feedActions.getFeeds();
     // this.props.actions.feedActions.betterGetFeeds();
     this.props.actions.feedActions.getFeedsWithMarkers();

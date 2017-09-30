@@ -3,7 +3,7 @@ import FeedList from "./feedList";
 import OptionsMenu from "./options";
 
 // class Sidebar extends Component {
-export default function Sidebar(props) {
+export default function OldSidebar(props) {
   // render() {
   return (
     <div>

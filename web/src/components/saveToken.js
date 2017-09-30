@@ -5,14 +5,16 @@ import { Redirect } from 'react-router-dom';
 
 class SaveToken extends Component {
   componentWillMount() {
+  }
+  render() {
 
     const search = window.location.search;
     const params = new URLSearchParams(search);
     const access_token = params.get('access_token');
     const refresh_token = params.get('refresh_token');
+    
     this.props.saveToken({access_token, refresh_token});
-  }
-  render() {
+
     return (
       <Redirect to="/" />
     )

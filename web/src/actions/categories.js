@@ -1,5 +1,5 @@
 
-import { makeRequest, handleApiError, categoriesRequest } from '../util/api';
+import { makeRequest, handleApiError, getCategories } from '../util/api';
 import feedlyConfig from "../util/feedly";
 import _ from "lodash";
 import {
@@ -13,34 +13,34 @@ const loadCategoriesSuccess = (categories) => ({
   categories
 })
 
-export function getCategories() {
+export function listCategories() {
   return (dispatch, getState) => {
-    categoriesRequest()
+    getCategories()
       .then(categories => {
         dispatch(loadCategoriesSuccess(categories))
       })
   }
 }
-export function listCategories() {
-  return (dispatch, getState) => {
-    dispatch({
-      type: LIST_CATEGORIES_LOADING
-    });
-    makeRequest(feedlyConfig.resources.CATEGORY_LIST)
-      .then(response => {
-        const categories = response.data;
+// export function listCategories() {
+//   return (dispatch, getState) => {
+//     dispatch({
+//       type: LIST_CATEGORIES_LOADING
+//     });
+//     makeRequest(feedlyConfig.resources.CATEGORY_LIST)
+//       .then(response => {
+//         const categories = response.data;
 
-        _.each(categories, c => {
-          c.visible = true;
-        });
-        dispatch({ type: LIST_CATEGORIES_FINISHED, payload: categories });
-      })
-      .catch(err => {
-        handleApiError(err, dispatch)
+//         _.each(categories, c => {
+//           c.visible = true;
+//         });
+//         dispatch({ type: LIST_CATEGORIES_FINISHED, payload: categories });
+//       })
+//       .catch(err => {
+//         handleApiError(err, dispatch)
         
-      });
-  };
-}
+//       });
+//   };
+// }
 
 
 export function toggleVisibility(category) {

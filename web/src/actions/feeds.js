@@ -1,4 +1,4 @@
-import { makeRequest, handleApiError, feedsRequest, markersRequest  } from "../util/api";
+import { makeRequest, handleApiError, getFeeds, getUnreadCounts  } from "../util/api";
 import feedlyConfig from "../util/feedly";
 import {
   LIST_FEEDS_FINISHED,
@@ -20,7 +20,7 @@ export function sendFeedError(error) {
 
 export function getMarkers() {
   // return (dispatch, getState) => {
-    return markersRequest()
+    return getUnreadCounts()
       // .then(markers => {
       //   debugger;
       // })
@@ -36,9 +36,9 @@ const loadFeedsSuccess = (feeds, unreadInfo) => ({
 
 export function betterGetFeeds(unreadCounts) {
   return (dispatch, getState) => {
-    return feedsRequest()
+    return getFeeds()
       .then(feeds => {
-        console.log(unreadCounts);
+        
         const unreadInfo = unreadCounts.reduce(function(prev, curr, idx) {
           prev[curr.id] = curr.count;
           return prev;
@@ -64,34 +64,34 @@ export function getFeedsWithMarkers() {
   }
 }
 
-export function getFeeds() {
-  let feeds = {};
-  return (dispatch, getState) => {
-    dispatch({
-      type: LIST_FEEDS_LOADING
-    });
-    makeRequest(feedlyConfig.resources.SUBSCRIPTIONS)
-      .then(response => {
-        feeds = response.data;
+// export function getFeeds() {
+//   let feeds = {};
+//   return (dispatch, getState) => {
+//     dispatch({
+//       type: LIST_FEEDS_LOADING
+//     });
+//     makeRequest(feedlyConfig.resources.SUBSCRIPTIONS)
+//       .then(response => {
+//         feeds = response.data;
 
-        makeRequest(feedlyConfig.resources.UNREAD_COUNT)
-          .then(response => {
-            const unreadCounts = response.data.unreadcounts;
+//         makeRequest(feedlyConfig.resources.UNREAD_COUNT)
+//           .then(response => {
+//             const unreadCounts = response.data.unreadcounts;
             
-            dispatch({
-              type: LIST_FEEDS_FINISHED,
-              payload: { feeds, unreadCounts }
-            });
-          })
-          .catch(err => {
-            handleApiError(err, dispatch);
-          });
-      })
-      .catch(err => {
-        handleApiError(err, dispatch);
-      });
-  };
-}
+//             dispatch({
+//               type: LIST_FEEDS_FINISHED,
+//               payload: { feeds, unreadCounts }
+//             });
+//           })
+//           .catch(err => {
+//             handleApiError(err, dispatch);
+//           });
+//       })
+//       .catch(err => {
+//         handleApiError(err, dispatch);
+//       });
+//   };
+// }
 
 export function subscribe(feed) {
   

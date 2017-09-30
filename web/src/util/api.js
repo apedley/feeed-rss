@@ -15,14 +15,14 @@ export function makeRequest(resource, data = {}) {
   return axios.get(url);
 }
 
-export function categoriesRequest() {
+export function getCategories() {
   return makeRequest(feedlyConfig.resources.CATEGORY_LIST)
     .then(response => {
       return response.data;
     });
 }
 
-export function feedsRequest() {
+export function getFeeds() {
   return makeRequest(feedlyConfig.resources.SUBSCRIPTIONS)
     .then(response => {
       
@@ -31,7 +31,7 @@ export function feedsRequest() {
 }
 
 
-export function markersRequest() {
+export function getUnreadCounts() {
   return makeRequest(feedlyConfig.resources.UNREAD_COUNT)
     .then(response => {
       return response.data.unreadcounts;

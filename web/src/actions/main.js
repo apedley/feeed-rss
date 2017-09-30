@@ -47,7 +47,7 @@ const externalRedirect = item => {
 
 export function toggleItem(item, external = false) {
   return (dispatch, getState) => {
-    // debugger;
+    
     item.displayed = !item.displayed;
 
     if (external || !item.content) {

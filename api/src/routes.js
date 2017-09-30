@@ -1,152 +1,136 @@
-import { Router } from 'express';
-import Request from 'request';
-import feedlyEndpoints from './feedlyEndpoints';
+import { Router } from "express";
+import Request from "request";
 
-const validateAndSendJSON = (req, res, body) => {
-	if (typeof body !== 'string') {
-		return res.json(body)
-	}
-	try {
+import feedlyEndpoints from "./feedlyEndpoints";
 
-		var json = JSON.parse(body)
-			if (json.errorCode) {
-				res.status(json.errorCode).send({ 
-					error: {
-						id: json.errorId,
-						message: json.errorMessage,
-						code: json.errorCode
-					}
-				})
-			} else {
-				res.json(json);
-			}
-		} catch (e) {
-			
-			res.json({
-				message: 'could not parse json response',
-				error: e
-			});
-		}
-}
+import { validateAndSendJSON, sendFeedlyRequest } from "./util";
+
 export default ({ config }) => {
-	let api = Router();
+  let api = Router();
 
-	// mount the facets resource
-	api.get('/auth', (req, res) => {
+  // mount the facets resource
+  api.get("/auth", (req, res) => {
+    const baseURL = "https://sandbox7.feedly.com/v3/auth/auth";
 
-		const baseURL = "https://sandbox7.feedly.com/v3/auth/auth";
-		
-		const redirect_uri = "http://localhost:8080";
-		const scope = encodeURIComponent("https://cloud.feedly.com/subscriptions");
-		const client_id = "sandbox";
-		const response_type = "code";
-		
-		const url = `${baseURL}?client_id=${client_id}&response_type=${response_type}&redirect_uri=http%3A%2F%2Flocalhost%3A8080&scope=${scope}`;
-		
-		Request.get(url, (err, response, body) => {
-			if (err) {
-				return res.send('ERROR: ' + err);
-			}
-			
-			body = body.replace(new RegExp("/images/", 'g'), "https://sandbox7.feedly.com/images/");
-			res.send(body);
-		})
-	});
+    const scope = encodeURIComponent("https://cloud.feedly.com/subscriptions");
+    const client_id = config.client_id;
+    const response_type = "code";
 
-	api.get('/token', (req, res) => {
-		if (req.query.code || req.query.refresh_token) {
-			const baseURL = "https://sandbox7.feedly.com/v3/auth/token";
-			
-					const client_id = 'sandbox';
-					const client_secret = config.clientSecret;
-					const redirect_uri = encodeURIComponent('http://localhost:8080');
-					const state = 'tokened';
+    const url = `${baseURL}?client_id=${client_id}&response_type=${response_type}&redirect_uri=http%3A%2F%2Flocalhost%3A8080&scope=${scope}`;
 
-					let grant_type;
-					let url;
+    Request.get(url, (err, response, body) => {
+      if (err) {
+        return res.send("ERROR: " + err);
+      }
 
-					if (req.query.code) {
-						grant_type = 'authorization_code';
-						const code = req.query.code || '';
-						url = `${baseURL}?code=${code}&client_secret=${client_secret}&state=${state}&grant_type=${grant_type}&redirect_uri=${redirect_uri}&client_id=${client_id}`;
-					} else if (req.query.refresh_token) {
-						grant_type = 'refresh_token';
-						const refresh_token = req.query.refresh_token;
-						url = `${baseURL}?refresh_token=${refresh_token}&client_secret=${client_secret}&grant_type=${grant_type}&client_id=${client_id}`;
-					}
-					Request.post(url, (err, response, body) => {
-						
-						if (err) {
-							return res.send('ERROR: ' + err);
-						}
-						var json = JSON.parse(body);
-						if (json.access_token) {
-							res.redirect(config.webLoggedInLink + "?access_token=" + json.access_token + "&refresh_token=" + json.refresh_token + "&id=" + json.id);
-						} else {
-							res.send('error');
-						}
-					})
-		} else {
-			res.send('ok');
-		}
+      body = body.replace(
+        new RegExp("/images/", "g"),
+        "https://sandbox7.feedly.com/images/"
+      );
+      res.send(body);
+    });
+  });
 
+  api.get("/token", (req, res) => {
+    if (req.query.code || req.query.refresh_token) {
+      const baseURL = "https://sandbox7.feedly.com/v3/auth/token";
 
-	})
-	
+      const client_id = "sandbox";
+      const client_secret = config.clientSecret;
+      const redirect_uri = encodeURIComponent("http://localhost:8080");
+      const state = "tokened";
 
-	// perhaps expose some API metadata at the root
-	api.get('/', (req, res) => {
-		if (req.query.code) {
-			res.redirect('/token?code=' + req.query.code);
-		} else {
-			res.send('okay');
-		}
-	});
+      let grant_type;
+      let url;
 
-	api.get('/request', (req, res) => {
-		if (!req.query.feedlyEndpoint || !req.query.token) {
-			return res.send('Error');
-		}
+      if (req.query.code) {
+        grant_type = "authorization_code";
+        const code = req.query.code || "";
+        url = `${baseURL}?code=${code}&client_secret=${client_secret}&state=${state}&grant_type=${grant_type}&redirect_uri=${redirect_uri}&client_id=${client_id}`;
+      } else if (req.query.refresh_token) {
+        grant_type = "refresh_token";
+        const refresh_token = req.query.refresh_token;
+        url = `${baseURL}?refresh_token=${refresh_token}&client_secret=${client_secret}&grant_type=${grant_type}&client_id=${client_id}`;
+      }
 
-		const id = encodeURIComponent(req.query.fetchId)
-		const endpoint = feedlyEndpoints[req.query.feedlyEndpoint];
-		
-		if (config.mockApi) {
-			if (endpoint.mockResponseBody) {
+      Request.post(url, (err, response, body) => {
+        if (err) {
+          return res.send("ERROR: " + err);
+        }
+        var json = JSON.parse(body);
+        if (json.access_token) {
+          res.redirect(
+            config.webLoggedInLink +
+              "?access_token=" +
+              json.access_token +
+              "&refresh_token=" +
+              json.refresh_token +
+              "&id=" +
+              json.id
+          );
+        } else {
+          res.send("error");
+        }
+      });
+    } else {
+      res.send("ok");
+    }
+  });
 
-				const body = endpoint.mockResponseBody
-				
-				return validateAndSendJSON(req, res, body);
-			}
-		}
-		var options = {
-			url: config.feedlyBaseUrl + endpoint.getUrl(id),
-			method: endpoint.method,
-			headers: {
-				Authorization: 'Bearer ' + req.query.token
-			}
-		}
+  api.get("/", (req, res) => {
+    if (req.query.code) {
+      // redirected from oauth
+      res.redirect("/token?code=" + req.query.code);
+    } else {
+      res.sendStatus(404);
+    }
+  });
 
-		console.warn('API request');
+  api.post("/request", (req, res) => {
+    if (!req.query.feedlyEndpoint || !req.query.token) {
+      return res.send("Error");
+    }
 
-		if (options.method === 'POST') {
-			
-			const data = Object.assign({}, req.query);
-			delete data.token;
-			delete data.feedlyEndpoint;
+    const endpoint = feedlyEndpoints[req.query.feedlyEndpoint];
 
-			options.body = data;
-			options.json = true;
-		}
-		Request(options, (err, response, body) => {
-			
-			if (err) {
-				return res.send('ERROR: ' + err);
-			}
+    const fetchId = encodeURIComponent(req.query.fetchId);
 
-			return validateAndSendJSON(req, res, body);
-		});
-	});
+    var options = {
+      url: config.feedlyBaseUrl + endpoint.getUrl(fetchId),
+      method: endpoint.method,
+      body: req.body,
+      json: true,
+      headers: {
+        Authorization: "Bearer " + req.query.token
+      }
+    };
 
-	return api;
-}
+    sendFeedlyRequest(options, res, req);
+  });
+
+  api.get("/request", (req, res) => {
+
+    if (!req.query.feedlyEndpoint || !req.query.token) {
+      return res.send("Error");
+    }
+
+    const endpoint = feedlyEndpoints[req.query.feedlyEndpoint];
+    
+    if (config.mockApi && endpoint.mockResponseBody) {
+      return validateAndSendJSON(req, res, endpoint.mockResponseBody);
+    }
+
+    const fetchId = encodeURIComponent(req.query.fetchId);
+
+    var options = {
+      url: config.feedlyBaseUrl + endpoint.getUrl(fetchId),
+      method: endpoint.method,
+      headers: {
+        Authorization: "Bearer " + req.query.token
+      }
+    };
+    sendFeedlyRequest(options, res, req);
+  });
+
+  return api;
+};

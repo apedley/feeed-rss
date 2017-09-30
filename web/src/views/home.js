@@ -1,22 +1,39 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+
 import Header from '../components/header';
 import { Redirect } from 'react-router-dom';
 import OptionsMenu from '../components/options';
+import { Grid } from 'semantic-ui-react'
+
+import Sidebar from '../components/sidebar/sidebar';
+
+import * as subscriptions from '../actions/subscriptions';
+
 
 class HomeView extends Component {
+
+  
+  componentWillMount() {
+    this.props.actions.subscriptionsActions.fetchSubscriptions();
+  }
+
+  selectStream(stream) {
+    debugger;
+  }
+
   render() {
-    if (!this.props.authenticated) {
-      return (
-        <Redirect to="/about" />
-      )
-    }
+    
     return (
-      <div>
-        <Header />
-        <OptionsMenu authenticated={this.props.authenticated} />
-        hello
-      </div>
+      <Grid>
+        <Grid.Column width={5}>
+          <Sidebar />
+        </Grid.Column>
+        <Grid.Column>
+          maisjfdiosj
+        </Grid.Column>
+      </Grid>
     )
   }
 }
@@ -27,5 +44,12 @@ const mapStateToProps = (state) => {
     authenticated: state.auth.authenticated
   }
 }
+const mapDispatchToProps = (dispatch) => {
+  return {
+    actions: {
+      subscriptionsActions: bindActionCreators(subscriptions, dispatch)
+    }
+  }
+}
 
-export default connect(mapStateToProps)(HomeView);
+export default connect(mapStateToProps, mapDispatchToProps)(HomeView);

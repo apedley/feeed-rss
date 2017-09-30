@@ -5,19 +5,22 @@ import {
   USE_TOKEN,
   SKIP_TOKEN
 } from './types';
+
+
+
 export function saveToken({
   access_token,
   refresh_token
 }) {
 
   return function (dispatch) {
+    
+        localStorage.setItem('access_token', access_token);
+        localStorage.setItem('refresh_token', refresh_token);
 
     dispatch({
       type: SAVE_TOKEN
     });
-
-    localStorage.setItem('access_token', access_token);
-    localStorage.setItem('refresh_token', refresh_token);
   }
 }
 
